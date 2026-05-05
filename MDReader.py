@@ -715,13 +715,12 @@ def render_stats(data: dict | None) -> None:
 
 def render_content(data: dict | None) -> None:
     if data:
-        st.markdown(
+        st.html(
             f'<div class="reader-shell"><div class="md-content">{data["html"]}</div></div>',
-            unsafe_allow_html=True,
         )
         return
 
-    st.markdown(
+    st.html(
         """
         <div class="reader-shell">
           <div class="welcome-card">
@@ -731,7 +730,6 @@ def render_content(data: dict | None) -> None:
           </div>
         </div>
         """,
-        unsafe_allow_html=True,
     )
 
 
