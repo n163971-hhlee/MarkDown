@@ -74,11 +74,12 @@ THEMES = {
 }
 
 
-def inject_styles(theme: str) -> None:
+def inject_styles(theme: str, font_size: int = 100) -> None:
     theme_vars = "\n".join(
         f"    --{name.replace('_', '-')}: {value};"
         for name, value in THEMES[theme].items()
     )
+    font_size_factor = font_size / 100
     st.markdown(
         f"""
 <style>
@@ -355,6 +356,10 @@ div.stButton > button:focus:not(:active) {{
     to {{ opacity: 1; transform: translateY(0); }}
 }}
 
+.md-content {{
+    --font-size-factor: {font_size_factor};
+}}
+
 .md-content h1, .md-content h2, .md-content h3,
 .md-content h4, .md-content h5, .md-content h6 {{
     font-family: 'Noto Serif TC', serif;
@@ -365,7 +370,7 @@ div.stButton > button:focus:not(:active) {{
 }}
 
 .md-content h1 {{
-    font-size: 2.15em;
+    font-size: calc(2.15em * var(--font-size-factor));
     font-weight: 700;
     border-bottom: 1px solid var(--border);
     padding-bottom: 0.4em;
@@ -374,7 +379,7 @@ div.stButton > button:focus:not(:active) {{
 }}
 
 .md-content h2 {{
-    font-size: 1.48em;
+    font-size: calc(1.48em * var(--font-size-factor));
     color: var(--h2-color);
     position: relative;
     padding-left: 14px;
@@ -392,14 +397,14 @@ div.stButton > button:focus:not(:active) {{
 }}
 
 .md-content h3 {{
-    font-size: 1.18em;
+    font-size: calc(1.18em * var(--font-size-factor));
     color: var(--h3-color);
 }}
 
 .md-content p {{
     margin: 0.9em 0;
     font-family: 'Crimson Pro', serif;
-    font-size: 1.24em;
+    font-size: calc(1.24em * var(--font-size-factor));
     color: var(--p-color);
     font-weight: 300;
 }}
@@ -422,7 +427,7 @@ div.stButton > button:focus:not(:active) {{
 .md-content li {{
     margin: 0.35em 0;
     font-family: 'Crimson Pro', serif;
-    font-size: 1.08em;
+    font-size: calc(1.08em * var(--font-size-factor));
     color: var(--li-color);
 }}
 
@@ -592,6 +597,7 @@ def initialize_state() -> None:
         "panel_expanded": True,
         "raw_markdown": "",
         "filename": "",
+        "font_size": 100,
     }
     for key, value in defaults.items():
         st.session_state.setdefault(key, value)
@@ -608,7 +614,7 @@ def render_header(data: dict | None) -> None:
             '</div>'
         )
 
-    title_col, theme_col = st.columns([12, 1], vertical_alignment="center")
+    title_col, font_col, theme_col = st.columns([12, 1, 1], vertical_alignment="center")
     with title_col:
         st.markdown(
             f"""
@@ -622,6 +628,16 @@ def render_header(data: dict | None) -> None:
             """,
             unsafe_allow_html=True,
         )
+    with font_col:
+        size_col1, size_col2 = st.columns(2, gap="small")
+        with size_col1:
+            if st.button("−", key="font_decrease", help="縮小文字", use_container_width=True):
+                st.session_state.font_size = max(70, st.session_state.font_size - 10)
+                st.rerun()
+        with size_col2:
+            if st.button("＋", key="font_increase", help="放大文字", use_container_width=True):
+                st.session_state.font_size = min(150, st.session_state.font_size + 10)
+                st.rerun()
     with theme_col:
         theme_icon = "☀" if st.session_state.theme == "dark" else "☾"
         if st.button(theme_icon, key="theme_toggle", help="切換深淺主題", use_container_width=True):
@@ -715,7 +731,7 @@ def render_content(data: dict | None) -> None:
 
 
 initialize_state()
-inject_styles(st.session_state.theme)
+inject_styles(st.session_state.theme, st.session_state.font_size)
 
 data = None
 if st.session_state.raw_markdown:
