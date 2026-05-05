@@ -440,6 +440,17 @@ HTML = """<!DOCTYPE html>
     font-size: 0.85em; color: var(--pre-code-color); line-height: 1.7;
   }
 
+  /* Language label for code blocks */
+  .language-powershell::before {
+    content: "PowerShell";
+    display: block;
+    font-size: 0.75em;
+    color: var(--text-dimmer);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
   #content-box hr { border: none; border-top: 1px solid var(--border); margin: 2em 0; }
 
   #content-box table { width: 100%; border-collapse: collapse; margin: 1.2em 0; font-family: 'JetBrains Mono', monospace; font-size: 0.83em; }
@@ -763,7 +774,12 @@ def process_markdown(raw, filename):
     patched_raw = re.sub(r'!\[([^\]]*)\]\(([^)]+)\)', img_repl, raw)
     html = markdown.markdown(
       patched_raw,
-      extensions=['tables', 'fenced_code', 'codehilite', 'toc', 'nl2br']
+      extensions=['tables', 'fenced_code', 'toc', 'nl2br'],
+      extension_configs={
+          "fenced_code": {
+              "lang_prefix": "language-"
+          }
+      }
     )
     words = len(raw.split())
     lines = len(raw.splitlines())

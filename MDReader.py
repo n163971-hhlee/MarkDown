@@ -473,6 +473,16 @@ div.stButton > button:focus:not(:active) {{
     line-height: 1.7;
 }}
 
+.language-powershell::before {{
+    content: "PowerShell";
+    display: block;
+    font-size: 0.75em;
+    color: var(--text-dimmer);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}}
+
 .md-content hr {{
     border: none;
     border-top: 1px solid var(--border);
@@ -559,7 +569,12 @@ div.stButton > button:focus:not(:active) {{
 def process_markdown(raw: str, filename: str = "") -> dict:
     html = md_lib.markdown(
         raw,
-        extensions=["tables", "fenced_code", "codehilite", "toc", "nl2br"],
+        extensions=["tables", "fenced_code", "toc", "nl2br"],
+        extension_configs={
+            "fenced_code": {
+                "lang_prefix": "language-"
+            }
+        }
     )
     return {
         "html": html,
