@@ -2,18 +2,10 @@
 # 本機執行: streamlit run MDReader.py
 
 import re
-import sys
-import asyncio
 from html import escape, unescape
 
 import markdown as md_lib
 import streamlit as st
-
-if sys.platform == "win32":
-    try:
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    except Exception:
-        pass
 
 st.set_page_config(
     page_title="Markdown Reader",
@@ -840,7 +832,7 @@ def process_markdown(raw: str, filename: str = "") -> dict:
 
 def initialize_state() -> None:
     defaults = {
-        "theme": "dark",
+        "theme": "light",
         "panel_expanded": True,
         "raw_markdown": "",
         "filename": "",
